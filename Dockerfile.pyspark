@@ -1,0 +1,37 @@
+
+FROM python:3.8-slim-buster as runtime_image
+
+LABEL version="1.0" \
+      maintainer="Juarez Rudsatz \"juarezr@g.com.br\"" \
+      repository="git@github.com:juarezr/poc-pyspark-dw.git" \
+      website="https://github.com/juarezr/poc-pyspark-dw" \
+      description="This proof of concept will explore concepts and tools in Data Engineering."
+
+ENV TERM=linux \
+    PATH="/code:$PATH" \
+    ENV_NAME="PYSPARK POC"
+
+RUN apt-get update -yqq && \
+    apt-get upgrade -yqq && \
+    apt-get install -yqq --no-install-recommends \
+    less screen procps sudo nano \
+    curl wget \
+    iputils-ping inetutils-traceroute net-tools \
+    pgcli
+
+
+COPY trips.csv ingest.py report.py /tmp/
+
+RUN chmod 775 /tmp/*.py
+
+# RUN pip install -U pip setuptools wheel
+
+EXPOSE 18080
+
+WORKDIR /tmp/
+ENTRYPOINT ["/bin/bash"]
+
+# USER engineer
+CMD ["-k ls"]
+
+# End of the Dockerfile #

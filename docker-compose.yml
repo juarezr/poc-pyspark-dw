@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+    postgres:
+        # docker run -p 5433:5432 --name postgres96 -e POSTGRES_USER=engineer -e POSTGRES_PASSWORD=engineer -e POSTGRES_DB=engineer -d postgres:latest
+        container_name: data-warehouse
+        image: postgres:latest
+        environment:
+            - POSTGRES_USER=engineer
+            - POSTGRES_PASSWORD=engineer
+            - POSTGRES_DB=engineer
+        ports:
+            - 5432:5432
+        logging:
+            options:
+                max-size: 10m
+                max-file: "3"
+
+    poc:
+        container_name: poc-pyspark
+        depends_on:
+            - postgres
+        image: python-spark-poc-image
+        build:
+            context: .
+            dockerfile: Dockerfile.pyspark
+        hostname: pyspark_env
+        restart: always
+        stdin_open: true # docker run -i
+        tty: true        # docker run -t
+        entrypoint: /bin/bash
+        # command: [ "ingest", "report"]
+        environment:
+            - ENV_DESC=POC
+        logging:
+            options:
+                max-size: 10m
+                max-file: "3"

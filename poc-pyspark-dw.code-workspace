@@ -1,0 +1,142 @@
+// VSCODE settings when running on the local machine //
+
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	// These settings apply for all code under folder $git/poc-pyspark-dw/
+	// They can be overrided in in $git/poc-pyspark-dw/.vscode/settins.json
+	"settings": {
+		"editor.tabSize": 4,
+		"editor.trimAutoWhitespace": true,
+		"editor.wordWrapColumn": 88,
+		"editor.renderWhitespace": "trailing",
+		"files.eol": "\n",
+		"files.encoding": "utf8",
+		"files.trimFinalNewlines": true,
+		"files.trimTrailingWhitespace": true,
+		"files.exclude": {
+			"**/.eggs/*": true,
+			"**/__pycache__": true,
+			"**/.pylint.d": true,
+			"**/.cache": true,
+			"**/.mypy_cache": true,
+			"**/.pytest_cache": true,
+			"**/*.pyc": true,
+			"**/*.egg": true,
+			"**/.vscode-server": true,
+			},
+		"files.watcherExclude": {
+			"**/.git/*": true,
+			"**/.eggs/*": true,
+			"**/__pycache__/*": true,
+			"**/.cache/*": true,
+			"**/.mypy_cache/*": true,
+			"**/.pytest_cache/*": true,
+			"**/logs/*.*": true,
+			"**/*.pyc": true,
+			"**/*.egg": true,
+			"**/*.log": true,
+			"**/scratchpad*.*": true,
+			},
+		"search.exclude": {
+			"**/.git/*": true,
+			"**/.eggs/*": true,
+			"**/__pycache__/*": true,
+			"**/.cache/*": true,
+			"**/.mypy_cache/*": true,
+			"**/.pytest_cache/*": true,
+			"**/logs/*.*": true,
+			"**/*.pyc": true,
+			"**/*.egg": true,
+			"**/*.log": true,
+			"**/.vscode/tags": true,
+			"**/scratchpad*.*": true,
+			"**/.vscode-server/*": true,
+			},
+
+		"remote.downloadExtensionsLocally": true,
+		"git.rebaseWhenSync": true,
+
+		"[python]": {
+			// SETTINGS REPEATED PARANOICLY FROM ABOVE
+			"editor.tabSize": 4,
+			"editor.trimAutoWhitespace": true,
+			"editor.wordWrapColumn": 88,
+			"files.eol": "\n",
+			"files.encoding": "utf8",
+			"files.trimFinalNewlines": true,
+			"files.trimTrailingWhitespace": true,
+			// SETTINGS EXCLUSIVE TO PYTHON
+			"editor.insertSpaces": true,
+			"files.insertFinalNewline": true,
+			// "files.autoSave": "onFocusChange",
+		},
+
+		"python.linting.enabled": true,
+		"python.linting.maxNumberOfProblems": 12,
+		"python.linting.ignorePatterns": [
+			".vscode/*.py",
+			".git",
+			".tox",
+			".venv",
+			".eggs",
+			".pytest_cache",
+			".mypy_cache",
+			"__pycache__",
+			"_build",
+			"*.egg",
+			"*/_vendor/*",
+			"**/site-packages/**/*.py",
+			"node_modules",
+			"build",
+			"dist",
+			"logs",
+		],
+		"python.workspaceSymbols.enabled": false,
+		"python.workspaceSymbols.rebuildOnStart": false,
+		"python.workspaceSymbols.rebuildOnFileSave": false,
+
+		"python.linting.pylintEnabled": true,
+		"python.linting.pylintArgs": [
+			"--max-line-length=88",
+			"--disable=import-error,invalid-name,bad-continuation,line-too-long",
+		],
+
+		"python.formatting.provider": "black",
+		"python.formatting.blackArgs": [
+			"--line-length", "88"
+		],
+		"python.analysis.logLevel": "Warning",
+		"python.linting.flake8Args": [
+			"--max-line-length",
+			"88",
+			"--max-complexity",
+			"10",
+			"--extend-ignore",
+			"E203,W503,E501,F821,F841",
+			"--exclude",
+			".git,.tox,.venv,.eggs,.mypy_cache,.vscode,__pycache__,_build,*.egg,*/_vendor/*,node_modules,build,dist,logs"
+		],
+		"python.linting.mypyEnabled": true,
+		"python.linting.pydocstyleEnabled": false,
+		"python.testing.pytestEnabled": false,
+		"python.testing.unittestEnabled": false,
+		"python.testing.nosetestsEnabled": false,
+
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-vscode-remote.vscode-remote-extensionpack",
+			"samuelcolvin.jinjahtml",
+			"marklarah.pre-commit-vscode",
+			"reddevil.pythondoc",
+			"njqdev.vscode-python-typehint",
+			// "ms-pyright.pyright",
+			// "ms-python.vscode-pylance",
+		]
+	}
+}
