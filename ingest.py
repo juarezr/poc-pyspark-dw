@@ -43,8 +43,16 @@ def _expand_columns(row):
 
 def _expand_trips(csv):
     parsed = csv.rdd.map(_expand_columns)
-    df = parsed.toDF(['region', 'datasource', 'tripdate', 'lat1', 'lng1', 'lat2', 'lng2'])
-    return df
+    trips = parsed.toDF(['region', 'datasource', 'tripdate', 'lat1', 'lng1', 'lat2', 'lng2'])
+    return trips.alias('trip')
+
+
+def _ingest_into_dw(trips):
+    trips.write.format("jdbc") \
+        .option("url", "jdbc:postgresql://poc-dw:5432/poc") \
+        .option("dbtable", "public.trip_fact") \
+        .option("user", "poc").option("password", "poc") \
+        .mode("overwrite").save()
 
 
 # endregion
@@ -59,11 +67,25 @@ def _run_tasks():
     print("# Reading trips from CSV file...")
     csv = _read_trips(session, '/root/trips.csv')
 
-    print("# Reading trips from CSV file...")
-    parsed = _expand_trips(csv)
+    print("# Transforming columns...")
+    trips = _expand_trips(csv)
 
-    parsed.printSchema()
-    parsed.show()
+    trips.printSchema()
+    trips.show()
+
+    print("# Ingesting into database...")
+    _ingest_into_dw(trips)
+
+
+def _run_program():
+    print("# Starting POC Ingestion Routine...")
+    try:
+        _run_tasks()
+    except Exception as ex:  # pylint: disable=broad-except
+        print("# FAILURE: {0}".format(ex))
+        sys.exit(2)
+
+    print("# Finished POC Ingestion Routine.")
 
 
 def _run_program():

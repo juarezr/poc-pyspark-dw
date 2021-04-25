@@ -2,7 +2,6 @@ version: '3.7'
 services:
     dw:
         # docker run -p 5433:5432 --name poc-dw -e POSTGRES_USER=poc -e POSTGRES_PASSWORD=poc -e POSTGRES_DB=poc -d postgres:13
-        # psql -h poc-dw -U poc -d poc
         container_name: poc-dw
         hostname: poc-dw
         # image: postgres:13
@@ -27,7 +26,7 @@ services:
         # Spark fails if hostname has underscore
         hostname: poc-etl
         depends_on:
-            - postgres
+            - dw
         image: poc-pyspark-image
         build:
             context: .

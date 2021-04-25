@@ -113,7 +113,7 @@ $ git clone git@github.com:juarezr/poc-pyspark-dw.git
 
 ``` bash
 $ docker-compose build
-$ docker-compose run --rm etl
+$ docker-compose run --name poc-etl  etl
 ```
 
 This will open a shell inside the container:

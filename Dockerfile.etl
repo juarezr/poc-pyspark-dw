@@ -1,6 +1,5 @@
 
 FROM openjdk:8-jre-slim as runtime_image
-# FROM godatadriven/spark:3.1.1 as runtime_image
 
 LABEL version="1.0" \
       maintainer="Juarez Rudsatz \"juarezr@g.com.br\"" \
