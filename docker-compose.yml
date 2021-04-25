@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-    postgres:
+    dw:
         # docker run -p 5433:5432 --name poc-dw -e POSTGRES_USER=poc -e POSTGRES_PASSWORD=poc -e POSTGRES_DB=poc -d postgres:13
         # psql -h poc-dw -U poc -d poc
         container_name: poc-dw
@@ -22,9 +22,10 @@ services:
                 max-size: 10m
                 max-file: "3"
 
-    poc:
-        container_name: poc-pyspark
-        hostname: poc-pyspark
+    etl:
+        container_name: poc-etl
+        # Spark fails if hostname has underscore
+        hostname: poc-etl
         depends_on:
             - postgres
         image: poc-pyspark-image

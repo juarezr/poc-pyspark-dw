@@ -8,6 +8,8 @@ LABEL version="1.0" \
       website="https://github.com/juarezr/poc-pyspark-dw" \
       description="This proof of concept will explore concepts and tools in Data Engineering."
 
+ENV TERM=linux
+
 RUN echo 'Upgrading debian packages...'  \
     && apt-get update -yqq \
     # && apt-get upgrade -yqq \
@@ -48,8 +50,7 @@ RUN echo 'Installing python...' \
 RUN echo 'Installing pyspark...' && \
     python3 -m pip install pyspark findspark psycopg2-binary
 
-ENV TERM=linux \
-    SPARK_HOME="/usr/spark" \
+ENV SPARK_HOME="/usr/spark" \
     HADOOP_HOME="/usr/hadoop" \
     PATH="/usr/spark/bin:/usr/spark/sbin:usr/hadoop/bin:${PATH}"
 

@@ -113,13 +113,13 @@ $ git clone git@github.com:juarezr/poc-pyspark-dw.git
 
 ``` bash
 $ docker-compose build
-$ docker-compose run --rm poc
+$ docker-compose run --rm etl
 ```
 
 This will open a shell inside the container:
 
 ``` bash
-root@pyspark_env:/tmp#
+root@poc-pyspark:~#
 ```
 
 Quit from this shell using command: `exit`.

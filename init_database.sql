@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS trip_fact
     lng2 float NOT NULL
 );
 
--- select * from trip_fact
--- select * from region_dimension
+-- select * from trip_fact limit 20
+-- select * from region_dimension  limit 20
 
 -- End of Script --
