@@ -6,6 +6,17 @@ import os
 import sys
 import shutil
 
+# region Report
+
+def report(spark):
+    qr = spark.read.jdbc(url = "jdbc:postgresql://poc-dw:5432/poc",
+            table = "(SELECT region,datasource,tripdate,lat1,lng1,lat2,lng2 from public.trip_fact) AS my_query",
+            properties={"user": "poc", "password": "poc"}).createTempView('tbl')
+    # without createTempView('tbl'), this command will return a DataFrame
+    spark.sql('select * from tbl').show() #or use .collect() to get Rows
+
+# endregion
+
 # region Program Logic
 
 
