@@ -1,0 +1,70 @@
+
+FROM openjdk:8-jre-slim as runtime_image
+# FROM godatadriven/spark:3.1.1 as runtime_image
+
+LABEL version="1.0" \
+      maintainer="Juarez Rudsatz \"juarezr@g.com.br\"" \
+      repository="git@github.com:juarezr/poc-pyspark-dw.git" \
+      website="https://github.com/juarezr/poc-pyspark-dw" \
+      description="This proof of concept will explore concepts and tools in Data Engineering."
+
+RUN echo 'Upgrading debian packages...'  \
+    && apt-get update -yqq \
+    # && apt-get upgrade -yqq \
+    && apt-get install -yqq --no-install-recommends \
+       apt-utils dialog ca-certificates coreutils dialog groff gnupg
+
+RUN echo 'Installing utilities...' \
+    && apt-get install -yqq --no-install-recommends \
+    less screen procps sudo nano \
+    iputils-ping inetutils-traceroute net-tools \
+    netcat curl wget
+
+# ---------------------------------------------------------------------- #
+
+RUN echo 'Installing dependencies...' \
+    && apt-get install -yqq libpostgresql-jdbc-java postgresql-client
+
+RUN echo 'Downloading Prebuilt Apache Hadoop...' \
+    && wget -nv -O /tmp/hadoop-2.7.4.tar.gz \
+        https://archive.apache.org/dist/hadoop/common/hadoop-2.7.4/hadoop-2.7.4.tar.gz \
+    && tar -xzf /tmp/hadoop-2.7.4.tar.gz -C /tmp \
+    && mv /tmp/hadoop-2.7.4 /usr/hadoop
+
+RUN echo 'Installing Prebuilt Apache Spark Standalone...' \
+    && wget -nv -O /tmp/spark-3.1.1-bin-hadoop2.7.tgz \
+         https://downloads.apache.org/spark/spark-3.1.1/spark-3.1.1-bin-hadoop2.7.tgz \
+    && tar -xzf /tmp/spark-3.1.1-bin-hadoop2.7.tgz -C /tmp \
+    && mv /tmp/spark-3.1.1-bin-hadoop2.7 /usr/spark \
+    && ln -s /usr/share/java/postgresql-jdbc4.jar /usr/spark/jars/postgresql-jdbc4.jar
+
+# ---------------------------------------------------------------------- #
+
+RUN echo 'Installing python...' \
+    && apt-get install -yqq python3 python3-wheel \
+       python-setuptools python3-pip virtualenvwrapper \
+	&& update-alternatives --install /usr/local/bin/python python /usr/bin/python3.7 3
+
+RUN echo 'Installing pyspark...' && \
+    python3 -m pip install pyspark findspark psycopg2-binary
+
+ENV TERM=linux \
+    SPARK_HOME="/usr/spark" \
+    HADOOP_HOME="/usr/hadoop" \
+    PATH="/usr/spark/bin:/usr/spark/sbin:usr/hadoop/bin:${PATH}"
+
+# ---------------------------------------------------------------------- #
+
+COPY trips.csv ingest.py report.py /root/
+
+RUN echo 'Setting environment details...' \
+    && chmod 775 /root/*.py \
+    && echo -e "JAVA_HOME: ${JAVA_HOME}\nHADOOP_HOME: ${HADOOP_HOME}\nSPARK_HOME: ${SPARK_HOME}\nPATH: ${PATH}\n"
+
+# Spark Web UI Ports
+EXPOSE 8080 4040 18080 8081 7077
+
+WORKDIR /root/
+ENTRYPOINT ["/bin/bash"]
+
+# End of the Dockerfile #

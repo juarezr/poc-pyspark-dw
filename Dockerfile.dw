@@ -1,0 +1,12 @@
+
+FROM postgres:13 as runtime_image
+
+LABEL version="1.0" \
+      maintainer="Juarez Rudsatz \"juarezr@g.com.br\"" \
+      repository="git@github.com:juarezr/poc-pyspark-dw.git" \
+      website="https://github.com/juarezr/poc-pyspark-dw" \
+      description="This will create a postgresql database simulating a Datawarehouse."
+
+COPY init_database.sql /docker-entrypoint-initdb.d/
+
+# End of the Dockerfile #
