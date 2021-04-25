@@ -10,13 +10,9 @@ from pyspark.sql import SparkSession
 
 # region Program Logic
 
-def _init_session():
-    session = SparkSession.builder \
-        .master("local[*]") \
-        .appName("poc-spark-etl") \
-        .getOrCreate()
-    return session
-
+DW_URI = 'jdbc:postgresql://poc-dw:5432/poc'
+DW_USR = 'poc'
+DW_PWD = 'poc'
 
 def _read_trips(session, source_path, csv_schema=None):
     if csv_schema:
@@ -30,7 +26,7 @@ def _read_trips(session, source_path, csv_schema=None):
 def _expand_coord(coord):
     nums = coord[7:-1]
     pair = nums.split(' ')
-    res = (float(pair[0]), float(pair[1]))
+    res = (float(pair[1]), float(pair[0]))
     return res
 
 
@@ -47,12 +43,33 @@ def _expand_trips(csv):
     return trips.alias('trip')
 
 
-def _ingest_into_dw(trips):
-    trips.write.format("jdbc") \
-        .option("url", "jdbc:postgresql://poc-dw:5432/poc") \
-        .option("dbtable", "public.trip_fact") \
-        .option("user", "poc").option("password", "poc") \
+def _ingest_into_db(df, table_name):
+    _print_df(df, table_name)
+    # Spark batch write into postgresql
+    df.write.format("jdbc") \
+        .option("url", DW_URI) \
+        .option("dbtable", table_name) \
+        .option("user", DW_USR).option("password", DW_PWD) \
         .mode("overwrite").save()
+
+
+# endregion
+
+# region Spark helpers
+
+def _init_session():
+    session = SparkSession.builder \
+        .master("local[*]") \
+        .appName("poc-etl") \
+        .getOrCreate()
+    return session
+
+
+def _print_df(df, title=None, rows=4):
+    if title:
+        print("# Dataframe %s - Schema/Samples" % title)
+    df.printSchema()
+    df.show(rows)
 
 
 # endregion
@@ -67,14 +84,14 @@ def _run_tasks():
     print("# Reading trips from CSV file...")
     csv = _read_trips(session, '/root/trips.csv')
 
-    print("# Transforming columns...")
+    print("# Ingesting into Spatial database...")
+    _ingest_into_db(csv, "public.trip_geom")
+
+    print("# Transforming spatial columns...")
     trips = _expand_trips(csv)
 
-    trips.printSchema()
-    trips.show()
-
-    print("# Ingesting into database...")
-    _ingest_into_dw(trips)
+    print("# Ingesting into OLAP database...")
+    _ingest_into_db(trips, "public.trip_fact")
 
 
 def _run_program():

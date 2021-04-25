@@ -1,5 +1,6 @@
 
-FROM postgres:13 as runtime_image
+# FROM postgres:13 as runtime_image
+FROM postgis/postgis:13-3.0 as runtime_image
 
 LABEL version="1.0" \
       maintainer="Juarez Rudsatz \"juarezr@g.com.br\"" \

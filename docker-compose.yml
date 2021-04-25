@@ -10,6 +10,7 @@ services:
             context: .
             dockerfile: Dockerfile.dw
         environment:
+            - ENV_DESC=POC-DW
             - POSTGRES_USER=poc
             - POSTGRES_PASSWORD=poc
             - POSTGRES_DB=poc
@@ -34,9 +35,9 @@ services:
         stdin_open: true # docker run -i
         tty: true        # docker run -t
         entrypoint: /bin/bash
-        # command: [ "ingest", "report"]
+        # command: [ "python /root/ingest.py","python /root/report.py"]
         environment:
-            - ENV_DESC=POC
+            - ENV_DESC=POC-ETL
         logging:
             options:
                 max-size: 10m
