@@ -128,7 +128,7 @@ A possible environment setup for the deploying a similar application in the AWS 
 
 For developing or testing the POC/solution the following software was used:
 
-1. Ubuntu 20.10 ( a similar distro or event Widows with WSL3 may work )
+1. Ubuntu 20.10 ( a similar distro, Widows/WSL3 may work with some adapation )
 2. Git
 3. [Docker](https://docs.docker.com/engine/install/ubuntu/)
 4. Docker Compose
@@ -191,17 +191,19 @@ This will open a shell inside the container:
 root@poc-pyspark:~#
 ```
 
-Quit from this shell using command: `exit`.
+You can quit from this shell using command: `exit`.
 
-#### Running routines inside container
+#### Running POC routines inside container
 
-Run the routines that simulate the Data Enginering process by executing the python program.
-They have no paramaters and they present the result in console.
+Run the routines that simulate the Data Enginering process by executing the python programs.
+They require no command line paramaters and the result is presented in console.
 
 ``` bash
 $ python ingest.py # For ingesting the provided data in trips.csv
 $ python report.py # For obtaining the result from the Database
 ```
+
+For changing the parameter for the reports, edit the report.py file inside the container, or rebuild the containers if edited outsite. You can also use VSCode as describe bellow.
 
 #### Cleanup
 
@@ -219,7 +221,7 @@ For developing/debugging:
 
 1. Install Python 3 on computer
 2. Add python to PATH environment variable
-3. Install [vscode](https://code.visualstudio.com/docs/setup/setup-overview)
+3. Install [Visual Studio Code](https://code.visualstudio.com/docs/setup/setup-overview)
 4. Install these extensions:
    1. VSCode Remote Development Extension Pack
       1. <kbd>Ctrl</kbd> > + <kbd>P</kbd> > `ext install ms-vscode-remote.vscode-remote-extensionpack`

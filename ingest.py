@@ -102,15 +102,15 @@ def _run_tasks():
     print("# Reading trips from CSV file...")
     csv = _read_trips(session, '/root/trips.csv')
 
-    print("# Ingesting into Spatial database...")
-    ins = _rename_cols(csv)
-    _ingest_into_db(ins, "public.trip_geom")
-
     print("# Transforming spatial columns...")
     trips = _expand_trips(csv)
 
     print("# Ingesting into OLAP database...")
     _ingest_into_db(trips, "public.trip_fact")
+
+    print("# Ingesting into Spatial database...")
+    ins = _rename_cols(csv)
+    _ingest_into_db(ins, "public.trip_geom")
 
     # TODO: run a query with WINDOW FUNCTIONS for locating and deduping similar trips
 

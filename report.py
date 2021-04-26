@@ -43,14 +43,14 @@ REPORT_AVG = '''
             ST_Envelope(ST_GeomFromText('SRID=4326;%s')))
     )
     SELECT 'Week' as Metric
-        , (date_trunc('week', tripdate)::date || ' - ' || (date_trunc('week', tripdate) + '6 days')::date)::varchar(255) AS Days
-        , count(*) as total
+        , date_trunc('week', tripdate)::date || ' - ' || (date_trunc('week', tripdate) + '6 days') ::date AS Weeks
+        , count(*) as Trips
     FROM trips_cte
     GROUP BY 2
     UNION ALL
-    SELECT 'Average'
-        , min(date_trunc('week', tripdate))::date || ' - ' || max(date_trunc('week', tripdate) + '6 days')::date AS WeekRange
-    	, count(*) / nullif(count(distinct extract(week from tripdate)),0) AS weeks
+    SELECT 'Average' as Metric
+        , min(tripdate)::date || ' - ' || max(tripdate)::date AS Weeks
+        , count(*) / nullif(count(distinct extract(week from tripdate)),0) AS Trips
     FROM trips_cte
 '''
 
@@ -102,7 +102,9 @@ def _run_tasks():
     print("# Starting Spark standalone session...")
     session = _init_session()
 
-    print("\n# Building Trips Average Report...\n")
+    msg = "\n# Building Trips Average Report with:\n# Region: %s\n# Date  : %s -> %s\n# Box   : %s\n"
+    print(msg % (FILTER_REGION, FILTER_DATE_INI, FILTER_DATE_FIN, FILTER_BBOX))
+
     _run_spark_report(session, REPORT_AVG, FILTER_REGION, FILTER_DATE_INI, FILTER_DATE_FIN, FILTER_BBOX)
 
 
