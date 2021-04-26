@@ -112,6 +112,8 @@ def _run_tasks():
     print("# Ingesting into OLAP database...")
     _ingest_into_db(trips, "public.trip_fact")
 
+    # TODO: run a query with WINDOW FUNCTIONS for locating and deduping similar trips
+
     _inform_user()
 
 
