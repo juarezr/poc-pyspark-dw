@@ -7,12 +7,19 @@ import sys
 import shutil
 
 from pyspark.sql import SparkSession
+from pyfiglet import figlet_format
+from termcolor import cprint
+
+# region Parameters
+
+DB_URI = 'jdbc:postgresql://poc-dw:5432/poc?stringtype=unspecified'
+DB_USR = 'poc'
+DB_PWD = 'poc'
+
+# endregion
 
 # region Program Logic
 
-DW_URI = 'jdbc:postgresql://poc-dw:5432/poc'
-DW_USR = 'poc'
-DW_PWD = 'poc'
 
 def _read_trips(session, source_path, csv_schema=None):
     if csv_schema:
@@ -21,6 +28,11 @@ def _read_trips(session, source_path, csv_schema=None):
         reader = session.read.format("csv")
     df = reader.option("header", "true").load(source_path)
     return df
+
+
+def _rename_cols(csv):
+    res = csv.withColumnRenamed('datetime', 'tripdate')
+    return res
 
 
 def _expand_coord(coord):
@@ -47,10 +59,16 @@ def _ingest_into_db(df, table_name):
     _print_df(df, table_name)
     # Spark batch write into postgresql
     df.write.format("jdbc") \
-        .option("url", DW_URI) \
+        .option("url", DB_URI) \
+        .option("user", DB_USR).option("password", DB_PWD) \
         .option("dbtable", table_name) \
-        .option("user", DW_USR).option("password", DW_PWD) \
-        .mode("overwrite").save()
+        .mode("append") \
+        .save()
+
+
+def _inform_user():
+    message = figlet_format("Success:\nTrips Imported")
+    cprint(message, 'yellow', 'on_red', attrs=['bold'])
 
 
 # endregion
@@ -69,7 +87,7 @@ def _print_df(df, title=None, rows=4):
     if title:
         print("# Dataframe %s - Schema/Samples" % title)
     df.printSchema()
-    df.show(rows)
+    df.show(rows, False)
 
 
 # endregion
@@ -85,7 +103,8 @@ def _run_tasks():
     csv = _read_trips(session, '/root/trips.csv')
 
     print("# Ingesting into Spatial database...")
-    _ingest_into_db(csv, "public.trip_geom")
+    ins = _rename_cols(csv)
+    _ingest_into_db(ins, "public.trip_geom")
 
     print("# Transforming spatial columns...")
     trips = _expand_trips(csv)
@@ -93,16 +112,7 @@ def _run_tasks():
     print("# Ingesting into OLAP database...")
     _ingest_into_db(trips, "public.trip_fact")
 
-
-def _run_program():
-    print("# Starting POC Ingestion Routine...")
-    try:
-        _run_tasks()
-    except Exception as ex:  # pylint: disable=broad-except
-        print("# FAILURE: {0}".format(ex))
-        sys.exit(2)
-
-    print("# Finished POC Ingestion Routine.")
+    _inform_user()
 
 
 def _run_program():

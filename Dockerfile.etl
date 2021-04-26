@@ -44,6 +44,7 @@ RUN echo 'Installing Prebuilt Apache Spark Standalone...' \
 RUN echo 'Installing python...' \
     && apt-get install -yqq python3 python3-wheel \
        python-setuptools python3-pip virtualenvwrapper \
+       pyfiglet termcolor \
 	&& update-alternatives --install /usr/local/bin/python python /usr/bin/python3.7 3
 
 RUN echo 'Installing pyspark...' && \
